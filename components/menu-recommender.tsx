@@ -174,7 +174,7 @@ export default function MenuRecommender() {
         </CardContent>
       </Card>
 
-      {menuData?.isMenu && (
+      {menuData?.isMenu === true ? (
         <>
           <Card className="mb-6">
             <CardHeader>
@@ -228,7 +228,13 @@ export default function MenuRecommender() {
             </CardContent>
           </Card>
         </>
-      )}
+      ) : menuData?.isMenu === false ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>No menu found</CardTitle>
+          </CardHeader>
+        </Card>
+      ) : null}
     </div>
   )
 }
