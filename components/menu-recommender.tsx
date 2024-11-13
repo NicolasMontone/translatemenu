@@ -111,6 +111,7 @@ export default function MenuRecommender() {
               <Button
                 onClick={() => uploadInputRef.current?.click()}
                 className="flex-1"
+                variant="outline"
               >
                 <Upload className="mr-2 h-4 w-4" /> Upload Photo
               </Button>

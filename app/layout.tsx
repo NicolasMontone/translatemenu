@@ -1,6 +1,8 @@
 import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
 import { Geist } from 'next/font/google'
+import { ThemeProvider } from 'next-themes'
+import { ThemeSwitcher } from '@/components/theme-switcher'
 
 const geist = Geist({
   subsets: ['latin'],
@@ -14,11 +16,13 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-      <html
-        lang="en"
-        className={`min-h-screen bg-background font-sans antialiased ${geist.className}`}
-      >
-        <body>{children}</body>
+      <html lang="en" className={geist.className} suppressHydrationWarning>
+        <body className="bg-background text-foreground">
+          <ThemeProvider attribute="class" defaultTheme="dark">
+            {children}
+            <ThemeSwitcher />
+          </ThemeProvider>
+        </body>
       </html>
     </ClerkProvider>
   )
