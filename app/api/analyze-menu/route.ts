@@ -2,6 +2,8 @@ import { openai } from '@ai-sdk/openai'
 import { generateObject } from 'ai'
 import { menuSchema } from '@/schemas/menu'
 
+export const maxDuration = 60; // This function can run for a maximum of 60 seconds
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData()
