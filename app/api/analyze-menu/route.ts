@@ -1,25 +1,6 @@
 import { openai } from '@ai-sdk/openai'
 import { generateObject } from 'ai'
-import { z } from 'zod'
-
-const menuSchema = z.object({
-  isMenu: z.boolean(),
-  menuItems: z.array(
-    z.object({
-      name: z.string(),
-      price: z.number(),
-      description: z.string(),
-    })
-  ),
-  topDishes: z
-    .array(
-      z.object({
-        name: z.string(),
-        description: z.string(),
-      })
-    )
-    .max(5),
-})
+import { menuSchema } from '@/schemas/menu'
 
 export async function POST(request: Request) {
   try {
@@ -45,7 +26,7 @@ export async function POST(request: Request) {
 
         1. **Extract all dishes** from the menu, including:
           - **Name** of the dish
-          - **Price** (as a number, without currency symbols)
+          - **Price** (as a string number, without currency symbols) if available, otherwise set to "-"
           - **Provide a detailed explanation of what the dish is**, in the user's dialect and language. Do not just extract the description from the menu; instead, explain the dish to the user.
 
         2. **Adapt descriptions** to the user's dialect based on their location:
@@ -55,7 +36,7 @@ export async function POST(request: Request) {
           - If the user is from **"France"** and the dish is **"grilled cheese sandwich"**, the description should be **"Es similar a un Croque-monsieur, un sándwich tostado con queso y jamón"**
           - If the user is from **"Japan"** and the dish is **"raw fish slices"**, the description should be **"Es como Sashimi, finas láminas de pescado crudo"**
 
-        3. **Identify top dishes** that match the user's preferences:
+        3. THIS IS THE MOST IMPORTANT PART **Identify top dishes** that match the user's preferences:
           - The user is from **"Argentina"**
           - Their preferences are **"healthy and vegetarian"**
 

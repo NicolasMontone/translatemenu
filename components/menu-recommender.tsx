@@ -4,28 +4,13 @@ import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Camera, Loader2, X, Upload } from 'lucide-react'
-import { z } from 'zod'
+
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
-
-const menuSchema = z.object({
-  isMenu: z.boolean(),
-  menuItems: z.array(
-    z.object({
-      name: z.string(),
-      price: z.number(),
-      description: z.string(),
-    })
-  ),
-  topDishes: z
-    .array(
-      z.object({
-        name: z.string(),
-        description: z.string(),
-      })
-    )
-    .max(5),
-})
+import { Alert } from './ui/alert'
+import { SignOutButton, UserButton } from '@clerk/nextjs'
+import { menuSchema } from '@/schemas/menu'
+import type { z } from 'zod'
 
 type MenuData = z.infer<typeof menuSchema>
 
@@ -33,6 +18,7 @@ export default function MenuRecommender() {
   const [capturedImages, setCapturedImages] = useState<string[]>([])
   const [menuData, setMenuData] = useState<MenuData | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const uploadInputRef = useRef<HTMLInputElement>(null)
 
@@ -83,8 +69,7 @@ export default function MenuRecommender() {
         const validatedData = menuSchema.parse(result)
         setMenuData(validatedData)
       } catch (error) {
-        console.error('Error analyzing menu:', error)
-        // Handle error (e.g., show error message to user)
+        setError('Failed to analyze menu')
       } finally {
         setIsLoading(false)
       }
@@ -96,12 +81,25 @@ export default function MenuRecommender() {
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-2xl">
+    <div className="container">
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>AI Menu Recommender</CardTitle>
+          <div className="flex justify-between items-center">
+            <UserButton />
+            <SignOutButton>
+              <Button variant="outline">Logout</Button>
+            </SignOutButton>
+          </div>
         </CardHeader>
         <CardContent>
+          {error && (
+            <div className="text-red-500">
+              <Alert variant="destructive">
+                There was an error analyzing your menu, if the problem persists
+                please contact support.
+              </Alert>
+            </div>
+          )}
           <div className="space-y-4">
             <div className="flex gap-2">
               <Button
@@ -186,7 +184,10 @@ export default function MenuRecommender() {
                   {menuData.topDishes.map((dish, index) => (
                     // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                     <li key={index} className="border-b pb-2 last:border-b-0">
-                      <h3 className="font-semibold">{dish.name}</h3>
+                      <div className="flex justify-between items-start">
+                        <h3 className="font-semibold">{dish.name}</h3>
+                        <span className="font-bold">${dish.price ?? '-'}</span>
+                      </div>
                       <p className="text-sm text-gray-600">
                         {dish.description}
                       </p>
@@ -214,7 +215,7 @@ export default function MenuRecommender() {
                             <Badge variant="secondary">Recommended</Badge>
                           )}
                           <span className="font-bold">
-                            ${item.price.toFixed(2)}
+                            ${item.price ?? '-'}
                           </span>
                         </div>
                       </div>
