@@ -40,7 +40,7 @@ export async function POST(request: Request) {
 
         3. THIS IS THE MOST IMPORTANT PART **Identify top dishes** that match the user's preferences:
           - The user is from **"Argentina"**
-          - Their preferences are **"healthy and vegetarian"**
+          - Their preferences are **"healthy and meat lover"**
 
         4. **Output** the data in the following structured format:
 
