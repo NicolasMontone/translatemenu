@@ -1,8 +1,9 @@
 import { openai } from '@ai-sdk/openai'
 import { generateObject } from 'ai'
 import { menuSchema } from '@/schemas/menu'
+import sharp from 'sharp'
 
-export const maxDuration = 60; // This function can run for a maximum of 60 seconds
+export const maxDuration = 60 // This function can run for a maximum of 60 seconds
 
 export async function POST(request: Request) {
   try {
@@ -16,7 +17,10 @@ export async function POST(request: Request) {
     const base64Images = await Promise.all(
       images.map(async (image) => {
         const imageBuffer = await image.arrayBuffer()
-        return Buffer.from(imageBuffer).toString('base64')
+        const processedBuffer = await sharp(Buffer.from(imageBuffer))
+          .jpeg({ quality: 70 })
+          .toBuffer()
+        return processedBuffer.toString('base64')
       })
     )
 
