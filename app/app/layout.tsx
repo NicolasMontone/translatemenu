@@ -1,16 +1,32 @@
 import { RedirectToSignIn, SignedIn, SignedOut } from '@clerk/nextjs'
+import { Toaster } from '@/components/ui/toaster'
+import { AppProvider } from '@/state'
+import { currentUser } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
+import { getPreferences } from '../../db/preferences'
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const user = await currentUser()
+  if (!user) {
+    redirect('/')
+  }
+
+  const preferences = await getPreferences(user.id)
+
+  console.log('preferences :', preferences)
   return (
     <>
       <SignedOut>
         <RedirectToSignIn />
       </SignedOut>
-      <SignedIn>{children}</SignedIn>
+      <SignedIn>
+        <AppProvider initialPreferences={preferences}>{children}</AppProvider>
+      </SignedIn>
+      <Toaster />
     </>
   )
 }

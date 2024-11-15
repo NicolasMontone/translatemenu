@@ -3,7 +3,7 @@ import './globals.css'
 import { Geist } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
 import { ThemeSwitcher } from '@/components/theme-switcher'
-import { Analytics } from '@vercel/analytics/next';
+import { Analytics } from '@vercel/analytics/next'
 
 const geist = Geist({
   subsets: ['latin'],
@@ -17,8 +17,8 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-      <html lang="en" className={geist.className} suppressHydrationWarning>
-        <body className="bg-background text-foreground">
+      <html lang="en" className={geist.variable} suppressHydrationWarning>
+        <body className="bg-background text-foreground font-sans">
           <ThemeProvider attribute="class" defaultTheme="dark">
             {children}
             <ThemeSwitcher />

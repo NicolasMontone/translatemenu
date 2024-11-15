@@ -1,5 +1,5 @@
 import { SignedIn, SignedOut, SignInButton } from '@clerk/nextjs'
-import { Camera, Globe, Link, Star, Utensils } from 'lucide-react'
+import { Camera, Globe, Star, Utensils } from 'lucide-react'
 import { default as NextLink } from 'next/link'
 
 import { Button } from '../components/ui/button'
@@ -15,9 +15,9 @@ export default function Home() {
         </NextLink>
         <nav>
           <SignedIn>
-            <Link href="/app">
-              <Button>Go to app</Button>
-            </Link>
+            <NextLink href="/app">
+              <Button>Go To app</Button>
+            </NextLink>
           </SignedIn>
           <SignedOut>
             <SignInButton>
@@ -41,11 +41,11 @@ export default function Home() {
               </div>
 
               <SignedIn>
-                <Link href="/app">
+                <NextLink href="/app">
                   <Button size="lg" className="w-full max-w-[350px]">
                     Go To App
                   </Button>
-                </Link>
+                </NextLink>
               </SignedIn>
               <SignedOut>
                 <SignInButton>
@@ -152,11 +152,11 @@ export default function Home() {
               </div>
 
               <SignedIn>
-                <Link href="/app">
+                <NextLink href="/app">
                   <Button className="w-full max-w-[350px]" size="lg">
                     Go To App
                   </Button>
-                </Link>
+                </NextLink>
               </SignedIn>
               <SignedOut>
                 <SignInButton>
