@@ -47,20 +47,20 @@ export async function POST(request: Request) {
          - **Provide a detailed explanation of what the dish is**, in the user's dialect and language. Do not just extract the description from the menu; instead, explain the dish to the user.
       
       2. **Adapt descriptions** to the user's dialect and cultural context based on their location (**"${
-        preferences.country
+        preferences?.country
       }"**):
          - Use local terms or analogies familiar to someone from **"${
-           preferences.country
+           preferences?.country
          }"**.
          - For example:
            - If the user is from **"Japan"** and the dish is **"raw fish slices"**, describe it as **"Similar to Sashimi, thin slices of raw fish"**.
       
       3. **Identify top dishes** that match the user's preferences:
-         - The user is from **"${preferences.country}"**.
+         - The user is from **"${preferences?.country}"**.
          - Their preferences are:
            ${
-             preferences.selectedPreferences
-               ? JSON.stringify(preferences.selectedPreferences, null, 2)
+             preferences?.selectedPreferences
+               ? JSON.stringify(preferences?.selectedPreferences, null, 2)
                : 'None specified'
            }.
          - Consider their dietary restrictions, allergies, health preferences, cuisine preferences, and any additional information to select dishes that best match their needs.

@@ -5,9 +5,9 @@ import type { Preferences } from '@/schemas/preferences'
 
 export async function getPreferences(userId: string) {
   const preferences = await sql<{
-    preferences: Preferences
+    preferences?: Preferences
   }>`SELECT preferences FROM users WHERE clerk_user_id = ${userId}`
-  return preferences.rows[0].preferences
+  return preferences.rows[0]?.preferences
 }
 
 export async function savePreferences(
