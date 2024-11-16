@@ -4,8 +4,15 @@ import { default as NextLink } from 'next/link'
 
 import { Button } from '../components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card'
+import { auth } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
 
-export default function Home() {
+export default async function Home() {
+  const { userId } = await auth()
+
+  if (userId) {
+    redirect('/app')
+  }
   return (
     <div className="flex flex-col min-h-screen max-w-[900px] mx-auto">
       <header className="px-4 lg:px-6 h-14 flex items-center justify-between">

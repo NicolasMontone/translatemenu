@@ -17,7 +17,6 @@ export default async function RootLayout({
 
   const preferences = await getPreferences(user.id)
 
-  console.log('preferences :', preferences)
   return (
     <>
       <SignedOut>
