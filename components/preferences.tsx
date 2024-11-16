@@ -95,6 +95,7 @@ export default function Preferences({ initialPreferences }: PreferencesProps) {
   )
   const [otherLanguage, setOtherLanguage] = useState('')
 
+  const [isLoading, setIsLoading] = useState(false)
   useEffect(() => {
     if (
       initialPreferences?.country &&
@@ -134,37 +135,38 @@ export default function Preferences({ initialPreferences }: PreferencesProps) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!country || !language) {
-      toast({
-        title: 'Error',
-        description: 'Please select a country and language.',
-        variant: 'destructive',
-      })
-      return
-    }
-
-    if (country === 'Other' && !otherCountry.trim()) {
-      toast({
-        title: 'Error',
-        description: 'Please specify your country.',
-        variant: 'destructive',
-      })
-      return
-    }
-
-    if (language === 'Other' && !otherLanguage.trim()) {
-      toast({
-        title: 'Error',
-        description: 'Please specify your language.',
-        variant: 'destructive',
-      })
-      return
-    }
-
-    const finalCountry = country === 'Other' ? otherCountry : country
-    const finalLanguage = language === 'Other' ? otherLanguage : language
-
+    setIsLoading(true)
     try {
+      if (!country || !language) {
+        toast({
+          title: 'Error',
+          description: 'Please select a country and language.',
+          variant: 'destructive',
+        })
+        return
+      }
+
+      if (country === 'Other' && !otherCountry.trim()) {
+        toast({
+          title: 'Error',
+          description: 'Please specify your country.',
+          variant: 'destructive',
+        })
+        return
+      }
+
+      if (language === 'Other' && !otherLanguage.trim()) {
+        toast({
+          title: 'Error',
+          description: 'Please specify your language.',
+          variant: 'destructive',
+        })
+        return
+      }
+
+      const finalCountry = country === 'Other' ? otherCountry : country
+      const finalLanguage = language === 'Other' ? otherLanguage : language
+
       const data = await savePreferences({
         country: finalCountry,
         language: finalLanguage,
@@ -191,13 +193,15 @@ export default function Preferences({ initialPreferences }: PreferencesProps) {
           'An unexpected error occur, please if this continues, talk to us.',
         variant: 'destructive',
       })
+    } finally {
+      setIsLoading(false)
     }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto p-6">
       <div>
-        <h2 className="text-2xl font-bold mb-4">Welcome to Menu AI</h2>
+        <h2 className="text-2xl font-bold mb-4">Add your preferences</h2>
         <p className="text-muted-foreground mb-6">
           Let's get to know your preferences to provide better recommendations.
         </p>
@@ -312,8 +316,8 @@ export default function Preferences({ initialPreferences }: PreferencesProps) {
         </p>
       </div>
 
-      <Button type="submit" className="w-full">
-        Save Preferences
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? 'Saving...' : 'Save Preferences'}
       </Button>
     </form>
   )

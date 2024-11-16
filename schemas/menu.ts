@@ -19,3 +19,5 @@ export const menuSchema = z.object({
     )
     .max(5),
 })
+
+export type Menu = z.infer<typeof menuSchema>

@@ -9,14 +9,11 @@ import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Alert } from './ui/alert'
 import { SignOutButton, UserButton } from '@clerk/nextjs'
-import { menuSchema } from '@/schemas/menu'
-import type { z } from 'zod'
-
-type MenuData = z.infer<typeof menuSchema>
+import { menuSchema, type Menu } from '@/schemas/menu'
 
 export default function MenuRecommender() {
   const [capturedImages, setCapturedImages] = useState<string[]>([])
-  const [menuData, setMenuData] = useState<MenuData | null>(null)
+  const [menuData, setMenuData] = useState<Menu | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -141,7 +138,7 @@ export default function MenuRecommender() {
                     <img
                       src={image}
                       alt={`Captured menu ${index + 1}`}
-                      className="w-full h-40 object-cover rounded-lg"
+                      className="w-full h-40 object-cover rounded-[10px]"
                     />
                     <Button
                       variant="destructive"
@@ -189,7 +186,7 @@ export default function MenuRecommender() {
                         <h3 className="font-semibold">{dish.name}</h3>
                         <span className="font-bold">${dish.price ?? '-'}</span>
                       </div>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-400">
                         {dish.description}
                       </p>
                     </li>
@@ -220,7 +217,7 @@ export default function MenuRecommender() {
                           </span>
                         </div>
                       </div>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-sm text-gray-400 mt-1">
                         {item.description}
                       </p>
                     </li>

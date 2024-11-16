@@ -2,11 +2,21 @@ import { openai } from '@ai-sdk/openai'
 import { generateObject } from 'ai'
 import { menuSchema } from '@/schemas/menu'
 import sharp from 'sharp'
+import { currentUser } from '@clerk/nextjs/server'
+import { getPreferences } from '@/db/preferences'
 
 export const maxDuration = 60 // This function can run for a maximum of 60 seconds
 
 export async function POST(request: Request) {
   try {
+    const user = await currentUser()
+
+    if (!user) {
+      return new Response('Unauthorized', { status: 401 })
+    }
+
+    const preferences = await getPreferences(user.id)
+
     const formData = await request.formData()
     const images = formData.getAll('images') as File[]
 
@@ -45,6 +55,7 @@ export async function POST(request: Request) {
         3. THIS IS THE MOST IMPORTANT PART **Identify top dishes** that match the user's preferences:
           - The user is from **"Argentina"**
           - Their preferences are **"healthy and meat lover"**
+          - The top dishes should be **"steak"** and **"salad"**
 
         4. **Output** the data in the following structured format:
 
@@ -62,6 +73,7 @@ export async function POST(request: Request) {
           "topDishes": [
             {
               "name": "Dish Name",
+              "price": Price as a number,
               "description": "Detailed explanation of the dish in user's dialect and language"
             },
             ...

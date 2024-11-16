@@ -8,3 +8,12 @@ export async function getPreferences(userId: string) {
   }>`SELECT preferences FROM users WHERE clerk_user_id = ${userId}`
   return preferences.rows[0].preferences
 }
+
+export async function savePreferences(
+  userId: string,
+  preferences: Preferences
+) {
+  await sql`UPDATE users SET preferences = ${JSON.stringify(
+    preferences
+  )} WHERE clerk_user_id = ${userId}`
+}

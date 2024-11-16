@@ -1,7 +1,7 @@
 import { currentUser } from '@clerk/nextjs/server'
 import { sql } from '@vercel/postgres'
 import { NextResponse } from 'next/server'
-import { preferencesSchema } from '../../../schemas/preferences'
+import { preferencesSchema } from '@/schemas/preferences'
 
 export async function POST(request: Request) {
   try {
@@ -22,8 +22,6 @@ export async function POST(request: Request) {
       )
     }
 
-
-    console.log('validatedPreferences.data :', validatedPreferences.data)
     await sql`UPDATE users SET preferences = ${JSON.stringify(
       validatedPreferences.data
     )} WHERE clerk_user_id = ${user.id}`
