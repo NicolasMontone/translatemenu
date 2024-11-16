@@ -3,12 +3,19 @@
 import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Camera, Loader2, X, Upload } from 'lucide-react'
+import {
+  Camera,
+  Loader2,
+  X,
+  Upload,
+  ChevronRight,
+  Settings,
+} from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Alert } from './ui/alert'
-import { SignOutButton, UserButton } from '@clerk/nextjs'
+import { SignOutButton } from '@clerk/nextjs'
 import { menuSchema, type Menu } from '@/schemas/menu'
 
 export default function MenuRecommender() {
@@ -79,16 +86,24 @@ export default function MenuRecommender() {
 
   return (
     <div className="container">
-      <Card className="mb-6">
+      <Card className="flex flex-col h-96">
         <CardHeader>
           <div className="flex justify-between items-center">
-            <UserButton />
+            <Button variant="ghost">
+              <div className="flex items-center space-x-2">
+                <Settings className="h-5 w-" />
+                <span >
+                  Change Preferences
+                </span>
+              </div>
+              <ChevronRight className="h-5 w-5" />
+            </Button>
             <SignOutButton>
               <Button variant="outline">Logout</Button>
             </SignOutButton>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="mt-auto">
           {error && (
             <div className="text-red-500">
               <Alert variant="destructive">
