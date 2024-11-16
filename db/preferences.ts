@@ -1,5 +1,6 @@
-import { sql } from '@vercel/postgres'
 import 'server-only'
+
+import { sql } from '@vercel/postgres'
 import type { Preferences } from '@/schemas/preferences'
 
 export async function getPreferences(userId: string) {

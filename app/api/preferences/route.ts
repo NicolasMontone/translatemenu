@@ -1,7 +1,7 @@
 import { currentUser } from '@clerk/nextjs/server'
-import { sql } from '@vercel/postgres'
 import { NextResponse } from 'next/server'
 import { preferencesSchema } from '@/schemas/preferences'
+import { getPreferences, savePreferences } from '@/db/preferences'
 
 export async function POST(request: Request) {
   try {
@@ -22,17 +22,11 @@ export async function POST(request: Request) {
       )
     }
 
-    await sql`UPDATE users SET preferences = ${JSON.stringify(
-      validatedPreferences.data
-    )} WHERE clerk_user_id = ${user.id}`
+    await savePreferences(user.id, validatedPreferences.data)
 
-    const preferences =
-      await sql`SELECT preferences FROM users WHERE clerk_user_id = ${user.id}`
+    const preferences = await getPreferences(user.id)
 
-    return NextResponse.json(
-      { preferences: preferences.rows[0].preferences },
-      { status: 200 }
-    )
+    return NextResponse.json({ preferences: preferences }, { status: 200 })
   } catch (error) {
     console.error('Error saving preferences:', error)
     return NextResponse.json(
