@@ -26,10 +26,11 @@ export const AppProvider = ({
   initialPreferences,
 }: {
   children: React.ReactNode
-  initialPreferences: Preferences
+  initialPreferences: Preferences | null
 }) => {
-  const [preferences, setPreferences] =
-    useState<Preferences>(initialPreferences)
+  const [preferences, setPreferences] = useState<Preferences | null>(
+    initialPreferences
+  )
 
   return (
     <AppContext.Provider value={{ preferences, setPreferences }}>

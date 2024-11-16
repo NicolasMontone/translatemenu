@@ -23,7 +23,9 @@ export default async function RootLayout({
         <RedirectToSignIn />
       </SignedOut>
       <SignedIn>
-        <AppProvider initialPreferences={preferences}>{children}</AppProvider>
+        <AppProvider initialPreferences={preferences ?? null}>
+          {children}
+        </AppProvider>
       </SignedIn>
       <Toaster />
     </>
