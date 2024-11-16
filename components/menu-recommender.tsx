@@ -86,15 +86,13 @@ export default function MenuRecommender() {
 
   return (
     <div className="container">
-      <Card className="flex flex-col h-96">
+      <Card className="flex flex-col min-h-96">
         <CardHeader>
           <div className="flex justify-between items-center">
             <Button variant="ghost">
               <div className="flex items-center space-x-2">
                 <Settings className="h-5 w-" />
-                <span >
-                  Change Preferences
-                </span>
+                <span>Change Preferences</span>
               </div>
               <ChevronRight className="h-5 w-5" />
             </Button>
@@ -113,19 +111,41 @@ export default function MenuRecommender() {
             </div>
           )}
           <div className="space-y-4">
+              {capturedImages.length > 0 && (
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  {capturedImages.map((image, index) => (
+                    // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                    <div key={index} className="relative shadow-md">
+                      <img
+                        src={image}
+                        alt={`Captured menu ${index + 1}`}
+                        className="w-full h-40 object-cover rounded-[10px]"
+                      />
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-1 right-1"
+                        onClick={() => handleRemoveImage(index)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             <div className="flex gap-2">
-              <Button
-                onClick={() => fileInputRef.current?.click()}
-                className="flex-1"
-              >
-                <Camera className="mr-2 h-4 w-4" /> Capture Menu
-              </Button>
               <Button
                 onClick={() => uploadInputRef.current?.click()}
                 className="flex-1"
                 variant="outline"
               >
                 <Upload className="mr-2 h-4 w-4" /> Upload Photo
+              </Button>
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                className="flex-1"
+              >
+                <Camera className="mr-2 h-4 w-4" /> Capture Menu
               </Button>
             </div>
             <input
@@ -145,28 +165,6 @@ export default function MenuRecommender() {
               className="hidden"
               multiple
             />
-            {capturedImages.length > 0 && (
-              <div className="mt-4 grid grid-cols-2 gap-2">
-                {capturedImages.map((image, index) => (
-                  // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                  <div key={index} className="relative">
-                    <img
-                      src={image}
-                      alt={`Captured menu ${index + 1}`}
-                      className="w-full h-40 object-cover rounded-[10px]"
-                    />
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      className="absolute top-1 right-1"
-                      onClick={() => handleRemoveImage(index)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            )}
             <Button
               onClick={handleAnalyze}
               className="w-full"
@@ -187,7 +185,7 @@ export default function MenuRecommender() {
 
       {menuData?.isMenu === true ? (
         <>
-          <Card className="mb-6">
+          <Card className="my-6">
             <CardHeader>
               <CardTitle>Top Recommended Dishes</CardTitle>
             </CardHeader>
