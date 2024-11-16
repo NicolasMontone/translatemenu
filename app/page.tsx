@@ -1,4 +1,4 @@
-import { SignedIn, SignedOut, SignInButton } from '@clerk/nextjs'
+import { SignInButton } from '@clerk/nextjs'
 import { Camera, Globe, Star, Utensils } from 'lucide-react'
 import { default as NextLink } from 'next/link'
 
@@ -6,6 +6,7 @@ import { Button } from '../components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { Suspense } from 'react'
 
 export default async function Home() {
   const { userId } = await auth()
@@ -21,16 +22,11 @@ export default async function Home() {
           <span className="ml-2 text-lg font-bold">Translate Menu</span>
         </NextLink>
         <nav>
-          <SignedIn>
-            <NextLink href="/app">
-              <Button>Go To app</Button>
-            </NextLink>
-          </SignedIn>
-          <SignedOut>
-            <SignInButton>
+          <Suspense fallback={<Button>Sign In</Button>}>
+            <SignInButton mode="modal">
               <Button>Sign In</Button>
             </SignInButton>
-          </SignedOut>
+          </Suspense>
         </nav>
       </header>
       <main className="flex-1">
@@ -47,20 +43,13 @@ export default async function Home() {
                 </p>
               </div>
 
-              <SignedIn>
-                <NextLink href="/app">
-                  <Button size="lg" className="w-full max-w-[350px]">
-                    Go To App
-                  </Button>
-                </NextLink>
-              </SignedIn>
-              <SignedOut>
-                <SignInButton>
+              <Suspense fallback={<Button>Try It Now</Button>}>
+                <SignInButton mode="modal">
                   <Button size="lg" className="w-full max-w-[350px]">
                     Try It Now
                   </Button>
                 </SignInButton>
-              </SignedOut>
+              </Suspense>
             </div>
           </div>
         </section>
@@ -158,20 +147,13 @@ export default async function Home() {
                 </p>
               </div>
 
-              <SignedIn>
-                <NextLink href="/app">
-                  <Button className="w-full max-w-[350px]" size="lg">
-                    Go To App
-                  </Button>
-                </NextLink>
-              </SignedIn>
-              <SignedOut>
-                <SignInButton>
+              <Suspense fallback={<Button>Try Translate Menu Now</Button>}>
+                <SignInButton mode="modal">
                   <Button className="w-full max-w-[350px]" size="lg">
                     Try Translate Menu Now
                   </Button>
                 </SignInButton>
-              </SignedOut>
+              </Suspense>
             </div>
           </div>
         </section>
