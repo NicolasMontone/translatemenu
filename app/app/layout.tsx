@@ -1,9 +1,15 @@
-import { RedirectToSignIn, SignedIn, SignedOut } from '@clerk/nextjs'
+import {
+  RedirectToSignIn,
+  SignedIn,
+  SignedOut,
+  SignOutButton,
+} from '@clerk/nextjs'
 import { Toaster } from '@/components/ui/toaster'
 import { AppProvider } from '@/state'
 import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-import { getPreferences } from '../../db/preferences'
+import { getPreferences } from '@/db/preferences'
+import { Button } from '@/components/ui/button'
 
 export default async function RootLayout({
   children,
@@ -19,6 +25,11 @@ export default async function RootLayout({
 
   return (
     <>
+      <nav>
+        <SignOutButton>
+          <Button variant="outline">Logout</Button>
+        </SignOutButton>
+      </nav>
       <SignedOut>
         <RedirectToSignIn />
       </SignedOut>
