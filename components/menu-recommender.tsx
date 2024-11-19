@@ -18,7 +18,11 @@ import { Alert } from './ui/alert'
 import { SignOutButton } from '@clerk/nextjs'
 import { menuSchema, type Menu } from '@/schemas/menu'
 
-export default function MenuRecommender() {
+export default function MenuRecommender({
+  onChangePreferences,
+}: {
+  onChangePreferences?: () => void
+}) {
   const [capturedImages, setCapturedImages] = useState<string[]>([])
   const [menuData, setMenuData] = useState<Menu | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -89,7 +93,7 @@ export default function MenuRecommender() {
       <Card className="flex flex-col min-h-96">
         <CardHeader>
           <div className="flex justify-between items-center">
-            <Button variant="ghost">
+            <Button variant="ghost" onClick={onChangePreferences}>
               <div className="flex items-center space-x-2">
                 <Settings className="h-5 w-" />
                 <span>Change Preferences</span>
@@ -111,28 +115,28 @@ export default function MenuRecommender() {
             </div>
           )}
           <div className="space-y-4">
-              {capturedImages.length > 0 && (
-                <div className="mt-4 grid grid-cols-2 gap-2">
-                  {capturedImages.map((image, index) => (
-                    // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                    <div key={index} className="relative shadow-md">
-                      <img
-                        src={image}
-                        alt={`Captured menu ${index + 1}`}
-                        className="w-full h-40 object-cover rounded-[10px]"
-                      />
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        className="absolute top-1 right-1"
-                        onClick={() => handleRemoveImage(index)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
+            {capturedImages.length > 0 && (
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                {capturedImages.map((image, index) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                  <div key={index} className="relative shadow-md">
+                    <img
+                      src={image}
+                      alt={`Captured menu ${index + 1}`}
+                      className="w-full h-40 object-cover rounded-[10px]"
+                    />
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-1 right-1"
+                      onClick={() => handleRemoveImage(index)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
             <div className="flex gap-2">
               <Button
                 onClick={() => uploadInputRef.current?.click()}

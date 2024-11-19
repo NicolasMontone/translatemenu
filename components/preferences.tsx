@@ -80,9 +80,13 @@ const savePreferences = async (
 
 type PreferencesProps = {
   initialPreferences: PreferencesData | null
+  onSuccess?: () => void
 }
 
-export default function Preferences({ initialPreferences }: PreferencesProps) {
+export default function Preferences({
+  initialPreferences,
+  onSuccess,
+}: PreferencesProps) {
   const { setPreferences } = useAppContext()
   const [country, setCountry] = useState(initialPreferences?.country ?? '')
   const [otherCountry, setOtherCountry] = useState('')
@@ -185,6 +189,7 @@ export default function Preferences({ initialPreferences }: PreferencesProps) {
           description: 'Your preferences have been saved.',
         })
         setPreferences(data.preferences)
+        onSuccess?.()
       }
     } catch (error) {
       toast({
