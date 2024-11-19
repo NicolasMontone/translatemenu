@@ -1,4 +1,3 @@
-import { SignInButton } from '@clerk/nextjs'
 import { Camera, Globe, Star, Utensils } from 'lucide-react'
 import { default as NextLink } from 'next/link'
 
@@ -15,11 +14,9 @@ export default async function Home() {
           <span className="ml-2 text-lg font-bold">Translate Menu</span>
         </NextLink>
         <nav>
-          <Suspense fallback={<Button>Sign In</Button>}>
-            <SignInButton mode="modal">
-              <Button>Sign In</Button>
-            </SignInButton>
-          </Suspense>
+          <NextLink href="/app">
+            <Button>Start Now</Button>
+          </NextLink>
         </nav>
       </header>
       <main className="flex-1">
@@ -37,11 +34,11 @@ export default async function Home() {
               </div>
 
               <Suspense fallback={<Button>Try It Now</Button>}>
-                <SignInButton mode="modal">
+                <NextLink href="/app">
                   <Button size="lg" className="w-full max-w-[350px]">
                     Try It Now
                   </Button>
-                </SignInButton>
+                </NextLink>
               </Suspense>
             </div>
           </div>
@@ -141,11 +138,11 @@ export default async function Home() {
               </div>
 
               <Suspense fallback={<Button>Try Translate Menu Now</Button>}>
-                <SignInButton mode="modal">
+                <NextLink href="/app">
                   <Button className="w-full max-w-[350px]" size="lg">
                     Try Translate Menu Now
                   </Button>
-                </SignInButton>
+                </NextLink>
               </Suspense>
             </div>
           </div>
