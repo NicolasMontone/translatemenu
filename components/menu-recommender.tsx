@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Settings,
   ImagePlus,
+  ArrowLeft,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -18,7 +19,6 @@ import { Alert } from '@/components/ui/alert'
 import { SignOutButton } from '@clerk/nextjs'
 import { menuSchema, type Menu } from '@/schemas/menu'
 import { cn } from '@/lib/utils'
-import { useToast } from '@/hooks/use-toast'
 
 export default function Component({
   onChangePreferences,
@@ -30,9 +30,9 @@ export default function Component({
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
+  const [showMobileAnalysis, setShowMobileAnalysis] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const uploadInputRef = useRef<HTMLInputElement>(null)
-  const { toast } = useToast()
 
   useEffect(() => {
     const checkMobile = () => {
@@ -83,22 +83,26 @@ export default function Component({
         })
 
         if (!response.ok) {
-          toast({
-            title: 'Failed to analyze menu',
-            description: 'Please try again later',
-            variant: 'destructive',
-          })
+          throw new Error('Failed to analyze menu')
         }
 
         const result = await response.json()
         const validatedData = menuSchema.parse(result)
         setMenuData(validatedData)
+        if (isMobile) {
+          setShowMobileAnalysis(true)
+        }
       } catch (error) {
         setError('Failed to analyze menu')
       } finally {
         setIsLoading(false)
       }
     }
+  }
+
+  const handleNewAnalysis = () => {
+    setShowMobileAnalysis(false)
+    setMenuData(null)
   }
 
   const isRecommended = (dishName: string) => {
@@ -126,92 +130,100 @@ export default function Component({
         <div className="container mx-auto p-4 h-full">
           <div className={cn('grid gap-6', isMobile ? '' : 'grid-cols-2')}>
             {/* Image Upload Section */}
-            <Card className="relative flex flex-col">
-              <CardHeader>
-                <CardTitle>Upload Menu</CardTitle>
-              </CardHeader>
-              <CardContent
-                className={`flex-grow flex flex-col items-center ${
-                  isMobile ? 'justify-center' : ''
-                } p-6`}
-              >
-                {capturedImages.length === 0 ? (
-                  // biome-ignore lint/a11y/useKeyWithClickEvents: false
-                  <div
-                    className="flex flex-col items-center justify-center gap-4 cursor-pointer text-center"
-                    onClick={() => uploadInputRef.current?.click()}
-                  >
-                    <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center">
-                      <ImagePlus className="w-8 h-8 text-muted-foreground" />
-                    </div>
-                    <h2 className="text-xl font-semibold">Upload Menu</h2>
-                    <p className="text-sm text-muted-foreground">
-                      Take a photo or upload from your gallery
-                    </p>
-                  </div>
-                ) : (
-                  <div className="w-full space-y-4">
-                    <ScrollArea className="h-[300px]">
-                      <div className="grid grid-cols-2 gap-2">
-                        {capturedImages.map((image, index) => (
-                          // biome-ignore lint/suspicious/noArrayIndexKey: false
-                          <div key={index} className="relative aspect-square">
-                            <img
-                              src={image}
-                              alt={`Menu ${index + 1}`}
-                              className="w-full h-full object-cover rounded-lg"
-                            />
-                            <Button
-                              variant="destructive"
-                              size="icon"
-                              className="absolute top-1 right-1"
-                              onClick={() => handleRemoveImage(index)}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    </ScrollArea>
-                    <Button
-                      onClick={handleAnalyze}
-                      className={`w-full ${!isMobile ? 'self-end' : ''}`}
-                      disabled={isLoading}
+            {(!isMobile || (isMobile && !showMobileAnalysis)) && (
+              <Card className="relative flex flex-col">
+                <CardHeader>
+                  <CardTitle>Upload Menu</CardTitle>
+                </CardHeader>
+                <CardContent className="flex-grow flex flex-col justify-center items-center p-6">
+                  {capturedImages.length === 0 ? (
+                    // biome-ignore lint/a11y/useKeyWithClickEvents: falso
+                    <div
+                      className="flex flex-col items-center justify-center gap-4 cursor-pointer text-center"
+                      onClick={() => uploadInputRef.current?.click()}
                     >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Analyzing...
-                        </>
-                      ) : (
-                        'Analyze Menu'
-                      )}
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                      <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center">
+                        <ImagePlus className="w-8 h-8 text-muted-foreground" />
+                      </div>
+                      <h2 className="text-xl font-semibold">Upload Menu</h2>
+                      <p className="text-sm text-muted-foreground">
+                        Take a photo or upload from your gallery
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="w-full space-y-4">
+                      <ScrollArea className="h-[300px]">
+                        <div className="grid grid-cols-2 gap-2">
+                          {capturedImages.map((image, index) => (
+                            // biome-ignore lint/suspicious/noArrayIndexKey: falso
+                            <div key={index} className="relative aspect-square">
+                              <img
+                                src={image}
+                                alt={`Menu ${index + 1}`}
+                                className="w-full h-full object-cover rounded-lg"
+                              />
+                              <Button
+                                variant="destructive"
+                                size="icon"
+                                className="absolute top-1 right-1"
+                                onClick={() => handleRemoveImage(index)}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </ScrollArea>
+                      <Button
+                        onClick={handleAnalyze}
+                        className="w-full"
+                        disabled={isLoading}
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Analyzing...
+                          </>
+                        ) : (
+                          'Analyze Menu'
+                        )}
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
             {/* Results Section */}
-            {menuData && (
+            {menuData && (!isMobile || (isMobile && showMobileAnalysis)) && (
               <Card className="overflow-hidden">
                 <CardHeader>
                   <CardTitle>
                     {menuData.isMenu ? 'Menu Analysis' : 'No Menu Found'}
                   </CardTitle>
+                  {isMobile && (
+                    <Button
+                      variant="outline"
+                      onClick={handleNewAnalysis}
+                      className="!mt-4"
+                    >
+                      <ArrowLeft className="mr-2 h-4 w-4" />
+                      New Analysis
+                    </Button>
+                  )}
                 </CardHeader>
                 <CardContent>
                   {menuData.isMenu ? (
-                    <div className="space-y-6">
+                    <div className="space-y-8">
                       <div>
-                        <h3 className="text-lg font-semibold mb-2">
+                        <h3 className="text-xl font-semibold mb-2">
                           Top Recommended Dishes
                         </h3>
                         <ScrollArea className="h-[200px]">
                           <ul className="space-y-4">
                             {menuData.topDishes.map((dish, index) => (
                               <li
-                                // biome-ignore lint/suspicious/noArrayIndexKey: false
+                                // biome-ignore lint/suspicious/noArrayIndexKey: falso
                                 key={index}
                                 className="border-b pb-4 last:border-b-0"
                               >
@@ -230,14 +242,14 @@ export default function Component({
                         </ScrollArea>
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold mb-2">
+                        <h3 className="text-xl font-semibold mb-2">
                           All Menu Items
                         </h3>
                         <ScrollArea className="h-[300px]">
                           <ul className="space-y-4">
                             {menuData.menuItems.map((item, index) => (
                               <li
-                                // biome-ignore lint/suspicious/noArrayIndexKey: false
+                                // biome-ignore lint/suspicious/noArrayIndexKey: falso
                                 key={index}
                                 className="border-b pb-4 last:border-b-0"
                               >
@@ -277,7 +289,7 @@ export default function Component({
       </main>
 
       {/* Footer for Mobile */}
-      {isMobile && (
+      {isMobile && !showMobileAnalysis && (
         <footer className="bg-background border-t p-4">
           <div className="flex justify-center">
             <Button
