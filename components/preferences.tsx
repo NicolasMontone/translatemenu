@@ -15,6 +15,8 @@ import { Input } from '@/components/ui/input'
 import { toast } from '@/hooks/use-toast'
 import type { Preferences as PreferencesData } from '@/schemas/preferences'
 import { useAppContext } from '@/state'
+import { ChevronLeft } from 'lucide-react'
+import { SignOutButton } from '@clerk/nextjs'
 
 const countries = [
   'United States',
@@ -204,7 +206,20 @@ export default function Preferences({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto p-6">
+    <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto px-4">
+      {initialPreferences && (
+        <header className="bg-background border-b py-4">
+          <div className="flex justify-between items-center">
+            <Button variant="ghost" onClick={onSuccess}>
+              <ChevronLeft className="h-5 w-5 mr-2" />
+              <span>Go back</span>
+            </Button>
+            <SignOutButton>
+              <Button variant="outline">Logout</Button>
+            </SignOutButton>
+          </div>
+        </header>
+      )}
       <div>
         <h2 className="text-2xl font-bold mb-4">Add your preferences</h2>
         <p className="text-muted-foreground mb-6">
