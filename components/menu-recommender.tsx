@@ -110,9 +110,9 @@ export default function Component({
   }
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen w-full flex flex-col">
       {/* Header */}
-      <header className="bg-background border-b p-4">
+      <header className="border-b p-4">
         <div className="flex justify-between items-center">
           <Button variant="ghost" onClick={onChangePreferences}>
             <Settings className="h-5 w-5 mr-2" />

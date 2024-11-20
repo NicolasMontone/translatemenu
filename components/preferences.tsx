@@ -206,9 +206,9 @@ export default function Preferences({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto px-4">
+    <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto px-4 pb-8">
       {initialPreferences && (
-        <header className="bg-background border-b py-4">
+        <header className="border-b py-4">
           <div className="flex justify-between items-center">
             <Button variant="ghost" onClick={onSuccess}>
               <ChevronLeft className="h-5 w-5 mr-2" />

@@ -4,6 +4,7 @@ import { Geist } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
 import { ThemeSwitcher } from '@/components/theme-switcher'
 import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const geist = Geist({
   subsets: ['latin'],
@@ -25,6 +26,7 @@ export default function RootLayout({
           </ThemeProvider>
         </body>
       </html>
+      <SpeedInsights />
       <Analytics />
     </ClerkProvider>
   )
