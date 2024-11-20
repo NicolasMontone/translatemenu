@@ -25,11 +25,6 @@ export default async function RootLayout({
 
   return (
     <>
-      <nav>
-        <SignOutButton>
-          <Button variant="outline">Logout</Button>
-        </SignOutButton>
-      </nav>
       <SignedOut>
         <RedirectToSignIn />
       </SignedOut>
