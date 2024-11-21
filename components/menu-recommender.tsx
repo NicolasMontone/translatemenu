@@ -245,9 +245,16 @@ export default function MenuAnalyzer({
               </div>
 
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {menuData.menuItems.map((item, index) => (
-                  <MenuItemCard key={`${item.name}-${index}`} item={item} />
-                ))}
+                {menuData.menuItems
+                  .sort((a, b) => {
+                    // Sort recommended items first
+                    if (a.recommended && !b.recommended) return -1
+                    if (!a.recommended && b.recommended) return 1
+                    return 0
+                  })
+                  .map((item, index) => (
+                    <MenuItemCard key={`${item.name}-${index}`} item={item} />
+                  ))}
               </div>
             </div>
           ) : (
