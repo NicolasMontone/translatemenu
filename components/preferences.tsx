@@ -206,27 +206,31 @@ export default function Preferences({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto px-4 pb-8">
-      {initialPreferences && (
-        <header className="border-b py-4">
-          <div className="flex justify-between items-center">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-8 max-w-2xl mx-auto px-4 pb-8"
+    >
+      <header className="border-b py-4">
+        <div className="flex justify-between items-center">
+          {initialPreferences ? (
             <Button variant="ghost" onClick={onSuccess}>
               <ChevronLeft className="h-5 w-5 mr-2" />
               <span>Go back</span>
             </Button>
-            <SignOutButton>
-              <Button variant="outline">Logout</Button>
-            </SignOutButton>
-          </div>
-        </header>
-      )}
+          ) : (
+            <div />
+          )}
+          <SignOutButton>
+            <Button variant="outline">Logout</Button>
+          </SignOutButton>
+        </div>
+      </header>
       <div>
         <h2 className="text-2xl font-bold mb-4">Add your preferences</h2>
         <p className="text-muted-foreground mb-6">
           Let's get to know your preferences to provide better recommendations.
         </p>
       </div>
-
       <div className="space-y-4">
         <div>
           <label htmlFor="country" className="block text-sm font-medium mb-1">
@@ -292,7 +296,6 @@ export default function Preferences({
           )}
         </div>
       </div>
-
       {Object.entries(preferences).map(([category, items]) => (
         <div key={category}>
           <h3 className="text-lg font-semibold mb-2 capitalize">
@@ -314,7 +317,6 @@ export default function Preferences({
           </div>
         </div>
       ))}
-
       <div>
         <label
           htmlFor="additionalInfo"
@@ -335,7 +337,6 @@ export default function Preferences({
           {additionalInfo.length}/400 characters
         </p>
       </div>
-
       <Button type="submit" className="w-full" disabled={isLoading}>
         {isLoading ? 'Saving...' : 'Save Preferences'}
       </Button>
