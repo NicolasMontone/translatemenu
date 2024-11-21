@@ -221,7 +221,9 @@ export default function Preferences({
             <div />
           )}
           <SignOutButton>
-            <Button variant="outline">Logout</Button>
+            <Button variant="outline" type="button">
+              Logout
+            </Button>
           </SignOutButton>
         </div>
       </header>
