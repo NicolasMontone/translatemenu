@@ -1,11 +1,58 @@
 import { openai } from '@ai-sdk/openai'
 import { generateObject } from 'ai'
-import { menuSchema } from '@/schemas/menu'
+import { menuSchema, type Menu } from '@/schemas/menu'
 import sharp from 'sharp'
 import { currentUser } from '@clerk/nextjs/server'
 import { getPreferences } from '@/db/preferences'
+import Replicate from 'replicate'
 
 export const maxDuration = 60 // This function can run for a maximum of 60 seconds
+
+const REPLICATE_API_TOKEN = 'r8_exSgcUEv6P5vPoZPeM1f2oGKJDDwTTM4NeH5x'
+const replicate = new Replicate({
+  auth: REPLICATE_API_TOKEN,
+})
+
+async function generateImage(
+  dishName: string,
+  description: string
+): Promise<string | null> {
+  try {
+    const prompt = `A professional, appetizing photo of ${dishName}. ${description}. Food photography style, restaurant quality presentation, on a clean plate with subtle garnish, soft natural lighting, shallow depth of field. No text or watermarks.`
+
+    const input = {
+      width: 1024,
+      height: 1024,
+      prompt,
+      scheduler: 'K_EULER',
+      num_outputs: 1,
+      guidance_scale: 0,
+      negative_prompt: 'worst quality, low quality',
+      num_inference_steps: 4,
+    }
+
+    console.log('Running replicate...')
+    const output = (await replicate.run(
+      'bytedance/sdxl-lightning-4step:5599ed30703defd1d160a25a63321b4dec97101d98b4674bcc56e41f62f35637',
+      {
+        input,
+      }
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    )) as unknown as any
+
+    // output is a readble stream
+    let finalOutput = ''
+    for await (const chunk of output) {
+      finalOutput += chunk
+    }
+
+    console.log('Generated image URL:', finalOutput)
+    return finalOutput
+  } catch (error) {
+    console.error(`Failed to generate image for ${dishName}:`, error)
+    return null
+  }
+}
 
 export async function POST(request: Request) {
   try {
@@ -75,13 +122,17 @@ export async function POST(request: Request) {
             "name": "Dish Name",
             "price": Price as a number or "-",
             "description": "Detailed explanation of the dish in user's dialect and language",
-            "recommended": true
+            "recommended": true,
+            "titleEnglish": "English Name of the Dish",
+            "descriptionEnglish": "English Description of the Dish"
           },
           {
             "name": "Dish Name",
             "price": Price as a number or "-",
             "description": "Detailed explanation of the dish in user's dialect and language",
-            "recommended": false
+            "recommended": false,
+            "titleEnglish": "English Name of the Dish",
+            "descriptionEnglish": "English Description of the Dish"
           },
           ...
         ]
@@ -110,7 +161,35 @@ export async function POST(request: Request) {
       ],
     })
 
-    return new Response(JSON.stringify(result.object), {
+    if (!result.object.isMenu) {
+      return new Response(JSON.stringify(result.object), {
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Generate images for each menu item sequentially with a for loop
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    const resultWithImages: any = { ...result.object }
+    for (let i = 0; i < resultWithImages.menuItems.length; i++) {
+      const item = resultWithImages.menuItems[i]
+      // Only generate images for items with names and descriptions
+      if (item.name && item.description) {
+        const imageUrl = await generateImage(
+          item.titleEnglish,
+          item.descriptionEnglish
+        )
+        resultWithImages.menuItems[i].image = imageUrl as unknown as string
+      }
+    }
+
+    // Return the enhanced menu data with images
+    const enhancedResult = {
+      ...result.object,
+      menuItems: resultWithImages.menuItems,
+    }
+
+    console.log(JSON.stringify(enhancedResult, null, 2))
+    return new Response(JSON.stringify(enhancedResult), {
       headers: { 'Content-Type': 'application/json' },
     })
   } catch (error) {

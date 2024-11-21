@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Camera,
   Loader2,
@@ -19,14 +19,44 @@ import { Alert } from '@/components/ui/alert'
 import { SignOutButton } from '@clerk/nextjs'
 import { menuSchema, type Menu } from '@/schemas/menu'
 
+// Add this new component for image loading
+const DishImage = ({ src, alt }: { src: string | null; alt: string }) => {
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  return (
+    <div className="w-full h-full relative bg-muted z-0">
+      {src && !error ? (
+        <>
+          {isLoading && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+            </div>
+          )}
+          <img
+            src={src}
+            alt={alt}
+            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+            style={{ opacity: isLoading ? 0 : 1 }}
+            onLoad={() => setIsLoading(false)}
+            onError={() => setError(true)}
+          />
+        </>
+      ) : (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <ImagePlus className="w-8 h-8 text-muted-foreground" />
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Update the MenuItemCard component
 const MenuItemCard = ({ item }: { item: Menu['menuItems'][0] }) => (
   <div className="bg-card rounded-lg overflow-hidden border flex">
     <div className="w-24 h-24 relative bg-muted shrink-0">
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full bg-background/50 flex items-center justify-center">
-          <ImagePlus className="w-4 h-4 text-muted-foreground" />
-        </div>
-      </div>
+      {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
+      <DishImage src={(item as any).image ?? null} alt={item.name} />
     </div>
     <div className="p-3 flex-1 min-w-0">
       <div className="flex justify-between items-start gap-2">
@@ -118,8 +148,8 @@ export default function Component({
         }
 
         const result = await response.json()
-        const validatedData = menuSchema.parse(result)
-        setMenuData(validatedData)
+
+        setMenuData(result)
         if (isMobile) {
           setShowMobileAnalysis(true)
         }
@@ -285,18 +315,22 @@ export default function Component({
                       // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                       <Card key={index} className="overflow-hidden">
                         <div className="aspect-square relative">
-                          {/* Placeholder for item image - you'll need to add this to your schema */}
-                          <div className="absolute inset-0 bg-muted" />
+                          <DishImage
+                            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+                            src={(item as any).image ?? null}
+                            alt={item.name}
+                          />
                         </div>
                         <CardContent className="p-4">
                           <div className="flex justify-between items-start mb-2">
                             <h3 className="font-semibold">{item.name}</h3>
                             <span className="font-bold">${item.price}</span>
                           </div>
+                          <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                            {item.description}
+                          </p>
                           {item.recommended && (
-                            <Badge variant="secondary" className="mt-2">
-                              Recommended
-                            </Badge>
+                            <Badge variant="secondary">Recommended</Badge>
                           )}
                         </CardContent>
                       </Card>
