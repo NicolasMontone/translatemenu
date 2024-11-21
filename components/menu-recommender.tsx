@@ -139,9 +139,6 @@ const MenuItemCard = ({ item }: { item: Menu['menuItems'][0] }) => (
       </div>
       <p className="flex-1 text-sm text-muted-foreground">{item.description}</p>
     </CardContent>
-    <CardFooter className="p-6 pt-0">
-      {item.recommended && <Badge variant="secondary">Recommended</Badge>}
-    </CardFooter>
   </Card>
 )
 
