@@ -18,7 +18,38 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Alert } from '@/components/ui/alert'
 import { SignOutButton } from '@clerk/nextjs'
 import { menuSchema, type Menu } from '@/schemas/menu'
-import { cn } from '@/lib/utils'
+
+const MenuItemCard = ({ item }: { item: Menu['menuItems'][0] }) => (
+  <div className="bg-card rounded-lg overflow-hidden border flex">
+    <div className="w-24 h-24 relative bg-muted shrink-0">
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full bg-background/50 flex items-center justify-center">
+          <ImagePlus className="w-4 h-4 text-muted-foreground" />
+        </div>
+      </div>
+    </div>
+    <div className="p-3 flex-1 min-w-0">
+      <div className="flex justify-between items-start gap-2">
+        <div className="min-w-0">
+          <h3 className="font-semibold leading-tight truncate">{item.name}</h3>
+          {item.description && (
+            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+              {item.description}
+            </p>
+          )}
+        </div>
+        <span className="font-bold whitespace-nowrap shrink-0">
+          ${item.price}
+        </span>
+      </div>
+      {item.recommended && (
+        <Badge variant="secondary" className="mt-2">
+          Recommended
+        </Badge>
+      )}
+    </div>
+  </div>
+)
 
 export default function Component({
   onChangePreferences,
@@ -105,8 +136,10 @@ export default function Component({
     setMenuData(null)
   }
 
-  const isRecommended = (dishName: string) => {
-    return menuData?.topDishes.some((dish) => dish.name === dishName) ?? false
+  const handleKeyPress = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      uploadInputRef.current?.click()
+    }
   }
 
   return (
@@ -125,162 +158,171 @@ export default function Component({
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="flex-grow overflow-auto">
         <div className="container mx-auto p-4 h-full">
-          <div className={cn('grid gap-6', isMobile ? '' : 'grid-cols-2')}>
-            {/* Image Upload Section */}
-            {(!isMobile || (isMobile && !showMobileAnalysis)) && (
-              <Card className="relative flex flex-col">
-                <CardHeader>
-                  <CardTitle>Upload Menu</CardTitle>
-                </CardHeader>
-                <CardContent className="flex-grow flex flex-col justify-center items-center p-6">
-                  {capturedImages.length === 0 ? (
-                    // biome-ignore lint/a11y/useKeyWithClickEvents: falso
-                    <div
-                      className="flex flex-col items-center justify-center gap-4 cursor-pointer text-center"
-                      onClick={() => uploadInputRef.current?.click()}
-                    >
-                      <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center">
-                        <ImagePlus className="w-8 h-8 text-muted-foreground" />
-                      </div>
-                      <h2 className="text-xl font-semibold">Upload Menu</h2>
-                      <p className="text-sm text-muted-foreground">
-                        Take a photo or upload from your gallery
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="w-full space-y-4">
-                      <ScrollArea className="h-[300px]">
-                        <div className="grid grid-cols-2 gap-2">
-                          {capturedImages.map((image, index) => (
-                            // biome-ignore lint/suspicious/noArrayIndexKey: falso
-                            <div key={index} className="relative aspect-square">
-                              <img
-                                src={image}
-                                alt={`Menu ${index + 1}`}
-                                className="w-full h-full object-cover rounded-lg"
-                              />
-                              <Button
-                                variant="destructive"
-                                size="icon"
-                                className="absolute top-1 right-1"
-                                onClick={() => handleRemoveImage(index)}
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      </ScrollArea>
-                      <Button
-                        onClick={handleAnalyze}
-                        className="w-full"
-                        disabled={isLoading}
-                      >
-                        {isLoading ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Analyzing...
-                          </>
-                        ) : (
-                          'Analyze Menu'
-                        )}
-                      </Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Results Section */}
-            {menuData && (!isMobile || (isMobile && showMobileAnalysis)) && (
-              <Card className="overflow-hidden">
-                <CardHeader>
-                  <CardTitle>
-                    {menuData.isMenu ? 'Menu Analysis' : 'No Menu Found'}
-                  </CardTitle>
-                  {isMobile && (
-                    <Button
-                      variant="outline"
-                      onClick={handleNewAnalysis}
-                      className="!mt-4"
-                    >
-                      <ArrowLeft className="mr-2 h-4 w-4" />
-                      New Analysis
-                    </Button>
-                  )}
-                </CardHeader>
-                <CardContent>
-                  {menuData.isMenu ? (
-                    <div className="space-y-8">
-                      <div>
-                        <h3 className="text-xl font-semibold mb-2">
-                          Top Recommended Dishes
-                        </h3>
-                        <ScrollArea className="h-[200px]">
-                          <ul className="space-y-4">
-                            {menuData.topDishes.map((dish, index) => (
-                              <li
-                                // biome-ignore lint/suspicious/noArrayIndexKey: falso
-                                key={index}
-                                className="border-b pb-4 last:border-b-0"
-                              >
-                                <div className="flex justify-between items-start">
-                                  <h4 className="font-semibold">{dish.name}</h4>
-                                  <span className="font-bold">
-                                    ${dish.price ?? '-'}
-                                  </span>
-                                </div>
-                                <p className="text-sm text-muted-foreground mt-1">
-                                  {dish.description}
-                                </p>
-                              </li>
-                            ))}
-                          </ul>
-                        </ScrollArea>
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-semibold mb-2">
-                          All Menu Items
-                        </h3>
-                        <ScrollArea className="h-[300px]">
-                          <ul className="space-y-4">
-                            {menuData.menuItems.map((item, index) => (
-                              <li
-                                // biome-ignore lint/suspicious/noArrayIndexKey: falso
-                                key={index}
-                                className="border-b pb-4 last:border-b-0"
-                              >
-                                <div className="flex justify-between items-start">
-                                  <h4 className="font-semibold">{item.name}</h4>
-                                  <div className="flex items-center gap-2">
-                                    {isRecommended(item.name) && (
-                                      <Badge variant="secondary">
-                                        Recommended
-                                      </Badge>
-                                    )}
-                                    <span className="font-bold">
-                                      ${item.price ?? '-'}
-                                    </span>
-                                  </div>
-                                </div>
-                                <p className="text-sm text-muted-foreground mt-1">
-                                  {item.description}
-                                </p>
-                              </li>
-                            ))}
-                          </ul>
-                        </ScrollArea>
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground">
-                      The uploaded image doesn't appear to be a menu. Please try
-                      uploading a different image.
+          {/* Mobile View */}
+          <div className="md:hidden">
+            {menuData && showMobileAnalysis ? (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between sticky top-0 bg-background pt-2 pb-3 -mx-4 px-4 border-b">
+                  <div>
+                    <h2 className="text-xl font-bold">
+                      Menu ({menuData.menuItems.length})
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      Scroll to explore dishes
                     </p>
-                  )}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleNewAnalysis}
+                    className="shrink-0"
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    New Scan
+                  </Button>
+                </div>
+
+                <div className="space-y-3 pb-16">
+                  {menuData.menuItems.map((item, index) => (
+                    <MenuItemCard key={`${item.name}-${index}`} item={item} />
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="h-full flex flex-col">
+                <Card className="flex-grow">
+                  <CardContent className="flex flex-col items-center justify-center h-full p-6">
+                    {capturedImages.length === 0 ? (
+                      <div
+                        // biome-ignore lint/a11y/useSemanticElements: <explanation>
+                        role="button"
+                        tabIndex={0}
+                        className="flex flex-col items-center justify-center gap-4 text-center"
+                        onClick={() => uploadInputRef.current?.click()}
+                        onKeyDown={handleKeyPress}
+                      >
+                        <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center">
+                          <ImagePlus className="w-8 h-8 text-muted-foreground" />
+                        </div>
+                        <div>
+                          <h2 className="text-xl font-semibold mb-1">
+                            Scan Menu
+                          </h2>
+                          <p className="text-sm text-muted-foreground">
+                            Take a photo or choose from gallery
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-full space-y-4">
+                        <ScrollArea className="h-[300px]">
+                          <div className="grid grid-cols-2 gap-2">
+                            {capturedImages.map((image, index) => (
+                              <div
+                                key={`${image}-${
+                                  // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                                  index
+                                }`}
+                                className="relative aspect-square"
+                              >
+                                <img
+                                  src={image}
+                                  alt={`Menu ${index + 1}`}
+                                  className="w-full h-full object-cover rounded-lg"
+                                />
+                                <Button
+                                  variant="destructive"
+                                  size="icon"
+                                  className="absolute top-1 right-1"
+                                  onClick={() => handleRemoveImage(index)}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </ScrollArea>
+                        <Button
+                          onClick={handleAnalyze}
+                          className="w-full"
+                          disabled={isLoading}
+                        >
+                          {isLoading ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Analyzing Menu...
+                            </>
+                          ) : (
+                            'Analyze Menu'
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </div>
+
+          {/* Desktop View */}
+          <div className="hidden md:block">
+            {menuData ? (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-bold">
+                    Menu - {menuData.menuItems.length} dishes detected
+                  </h2>
+                  <Button onClick={() => setMenuData(null)} variant="outline">
+                    New Analysis
+                  </Button>
+                </div>
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent h-12 bottom-0 z-10" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {menuData.menuItems.map((item, index) => (
+                      // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                      <Card key={index} className="overflow-hidden">
+                        <div className="aspect-square relative">
+                          {/* Placeholder for item image - you'll need to add this to your schema */}
+                          <div className="absolute inset-0 bg-muted" />
+                        </div>
+                        <CardContent className="p-4">
+                          <div className="flex justify-between items-start mb-2">
+                            <h3 className="font-semibold">{item.name}</h3>
+                            <span className="font-bold">${item.price}</span>
+                          </div>
+                          {item.recommended && (
+                            <Badge variant="secondary" className="mt-2">
+                              Recommended
+                            </Badge>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <Card className="w-full max-w-2xl mx-auto">
+                <CardContent className="flex flex-col items-center justify-center p-6">
+                  {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+                  <div
+                    // biome-ignore lint/a11y/useSemanticElements: <explanation>
+                    role="button"
+                    tabIndex={0}
+                    className="flex flex-col items-center justify-center gap-4 cursor-pointer text-center"
+                    onClick={() => uploadInputRef.current?.click()}
+                  >
+                    <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center">
+                      <ImagePlus className="w-8 h-8 text-muted-foreground" />
+                    </div>
+                    <h2 className="text-xl font-semibold">Upload Menu</h2>
+                    <p className="text-sm text-muted-foreground">
+                      Take a photo or upload from your gallery
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             )}
@@ -289,15 +331,23 @@ export default function Component({
       </main>
 
       {/* Footer for Mobile */}
-      {isMobile && !showMobileAnalysis && (
+      {isMobile && !showMobileAnalysis && !capturedImages.length && (
         <footer className="bg-background border-t p-4">
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-4">
             <Button
               size="lg"
-              className="rounded-full w-16 h-16"
+              className="rounded-full w-14 h-14"
               onClick={() => fileInputRef.current?.click()}
             >
               <Camera className="h-6 w-6" />
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="rounded-full w-14 h-14"
+              onClick={() => uploadInputRef.current?.click()}
+            >
+              <Upload className="h-6 w-6" />
             </Button>
           </div>
         </footer>

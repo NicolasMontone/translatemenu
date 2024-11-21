@@ -74,15 +74,14 @@ export async function POST(request: Request) {
           {
             "name": "Dish Name",
             "price": Price as a number or "-",
-            "description": "Detailed explanation of the dish in user's dialect and language"
+            "description": "Detailed explanation of the dish in user's dialect and language",
+            "recommended": true
           },
-          ...
-        ],
-        "topDishes": [
           {
             "name": "Dish Name",
             "price": Price as a number or "-",
-            "description": "Detailed explanation of the dish in user's dialect and language"
+            "description": "Detailed explanation of the dish in user's dialect and language",
+            "recommended": false
           },
           ...
         ]
