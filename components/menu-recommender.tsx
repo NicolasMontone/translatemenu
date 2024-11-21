@@ -42,7 +42,7 @@ const DishImage = ({ src, alt }: { src: string | null; alt: string }) => {
             setIsLoading(false)
             return
           }
-          // Poll again in 4 seconds
+          // First poll after 4 seconds, then continue polling every 4 seconds
           timeoutId = setTimeout(() => pollImage(attemptCount + 1), 4000)
           return
         }
@@ -65,13 +65,14 @@ const DishImage = ({ src, alt }: { src: string | null; alt: string }) => {
           setIsLoading(false)
           return
         }
-        // If there's an error, try again in 4 seconds
+        // First poll after 4 seconds, then continue polling every 4 seconds
         timeoutId = setTimeout(() => pollImage(attemptCount + 1), 4000)
       }
     }
 
     if (src) {
-      pollImage(0)
+      // Start first poll after 4 seconds
+      timeoutId = setTimeout(() => pollImage(0), 4000)
     } else {
       setIsLoading(false)
     }
