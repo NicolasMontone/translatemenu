@@ -1,10 +1,13 @@
 import { openai } from '@ai-sdk/openai'
 import { generateObject } from 'ai'
-import { menuSchema, type Menu } from '@/schemas/menu'
+import { menuSchema } from '@/schemas/menu'
 import sharp from 'sharp'
 import { currentUser } from '@clerk/nextjs/server'
-import { getPreferences } from '@/db/preferences'
+import { getPreferencesByClerkId } from '@/db/preferences'
 import Replicate from 'replicate'
+import { getUserByClerkId } from '@/db/user'
+import { imageWebhookUrl } from '../../../webhook-url'
+import { saveGeneration } from '../../../db/generations'
 
 export const maxDuration = 60 // This function can run for a maximum of 60 seconds
 
@@ -14,6 +17,7 @@ const replicate = new Replicate({
 })
 
 async function generateImage(
+  generationId: string,
   dishName: string,
   description: string
 ): Promise<string | null> {
@@ -31,23 +35,18 @@ async function generateImage(
       num_inference_steps: 4,
     }
 
-    console.log('Running replicate...')
-    const output = (await replicate.run(
-      'bytedance/sdxl-lightning-4step:5599ed30703defd1d160a25a63321b4dec97101d98b4674bcc56e41f62f35637',
-      {
-        input,
-      }
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    )) as unknown as any
+    const imageId = crypto.randomUUID()
 
-    // output is a readble stream
-    let finalOutput = ''
-    for await (const chunk of output) {
-      finalOutput += chunk
-    }
+    const finalImageId = `${generationId}:${imageId}`
+    await replicate.predictions.create({
+      version:
+        '5599ed30703defd1d160a25a63321b4dec97101d98b4674bcc56e41f62f35637',
+      input,
+      model: 'bytedance/sdxl-lightning-4step',
+      webhook: imageWebhookUrl(finalImageId),
+    })
 
-    console.log('Generated image URL:', finalOutput)
-    return finalOutput
+    return finalImageId
   } catch (error) {
     console.error(`Failed to generate image for ${dishName}:`, error)
     return null
@@ -61,8 +60,13 @@ export async function POST(request: Request) {
     if (!user) {
       return new Response('Unauthorized', { status: 401 })
     }
+    const supabaseUser = await getUserByClerkId(user.id)
 
-    const preferences = await getPreferences(user.id)
+    if (!supabaseUser) {
+      return new Response('Unauthorized', { status: 401 })
+    }
+
+    const preferences = await getPreferencesByClerkId(user.id)
 
     const formData = await request.formData()
     const images = formData.getAll('images') as File[]
@@ -161,6 +165,11 @@ export async function POST(request: Request) {
       ],
     })
 
+    const newGeneration = await saveGeneration({
+      user_id: supabaseUser.id.toString(),
+      data: result.object,
+    })
+
     if (!result.object.isMenu) {
       return new Response(JSON.stringify(result.object), {
         headers: { 'Content-Type': 'application/json' },
@@ -174,11 +183,12 @@ export async function POST(request: Request) {
       const item = resultWithImages.menuItems[i]
       // Only generate images for items with names and descriptions
       if (item.name && item.description) {
-        const imageUrl = await generateImage(
+        const imageId = await generateImage(
+          newGeneration.id.toString(),
           item.titleEnglish,
           item.descriptionEnglish
         )
-        resultWithImages.menuItems[i].image = imageUrl as unknown as string
+        resultWithImages.menuItems[i].image = imageId
       }
     }
 

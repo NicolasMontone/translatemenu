@@ -8,7 +8,7 @@ import { Toaster } from '@/components/ui/toaster'
 import { AppProvider } from '@/state'
 import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-import { getPreferences } from '@/db/preferences'
+import { getPreferencesByClerkId } from '@/db/preferences'
 import { Button } from '@/components/ui/button'
 
 export default async function RootLayout({
@@ -21,7 +21,7 @@ export default async function RootLayout({
     redirect('/')
   }
 
-  const preferences = await getPreferences(user.id)
+  const preferences = await getPreferencesByClerkId(user.id)
 
   return (
     <>

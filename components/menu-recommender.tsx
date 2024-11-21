@@ -17,12 +17,77 @@ import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Alert } from '@/components/ui/alert'
 import { SignOutButton } from '@clerk/nextjs'
-import { menuSchema, type Menu } from '@/schemas/menu'
+import type { Menu } from '@/schemas/menu'
 
-// Add this new component for image loading
+// Update the DishImage component
 const DishImage = ({ src, alt }: { src: string | null; alt: string }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    let mounted = true
+    let timeoutId: NodeJS.Timeout | undefined
+
+    const pollImage = async (attemptCount: number) => {
+      if (!mounted || !src) return
+
+      try {
+        const response = await fetch(`/api/image/${src}`)
+
+        if (!mounted) return
+
+        if (response.status === 404) {
+          if (attemptCount >= 30) { // 2 minutes maximum (30 * 4 seconds)
+            setError(true)
+            setIsLoading(false)
+            return
+          }
+          // Poll again in 4 seconds
+          timeoutId = setTimeout(() => pollImage(attemptCount + 1), 4000)
+          return
+        }
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch image')
+        }
+
+        const blob = await response.blob()
+        if (!mounted) return
+
+        const url = URL.createObjectURL(blob)
+        setImageUrl(url)
+        setIsLoading(false)
+      } catch (err) {
+        if (!mounted) return
+
+        if (attemptCount >= 30) {
+          setError(true)
+          setIsLoading(false)
+          return
+        }
+        // If there's an error, try again in 4 seconds
+        timeoutId = setTimeout(() => pollImage(attemptCount + 1), 4000)
+      }
+    }
+
+    if (src) {
+      pollImage(0)
+    } else {
+      setIsLoading(false)
+    }
+
+    // Cleanup function
+    return () => {
+      mounted = false
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+      if (imageUrl) {
+        URL.revokeObjectURL(imageUrl)
+      }
+    }
+  }, [src]) // Only src as dependency
 
   return (
     <div className="w-full h-full relative bg-muted z-0">
@@ -33,14 +98,16 @@ const DishImage = ({ src, alt }: { src: string | null; alt: string }) => {
               <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
             </div>
           )}
-          <img
-            src={src}
-            alt={alt}
-            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
-            style={{ opacity: isLoading ? 0 : 1 }}
-            onLoad={() => setIsLoading(false)}
-            onError={() => setError(true)}
-          />
+          {imageUrl && (
+            <img
+              src={imageUrl}
+              alt={alt}
+              className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+              style={{ opacity: isLoading ? 0 : 1 }}
+              onLoad={() => setIsLoading(false)}
+              onError={() => setError(true)}
+            />
+          )}
         </>
       ) : (
         <div className="absolute inset-0 flex items-center justify-center">
@@ -344,8 +411,8 @@ export default function Component({
                   {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
                   <div
                     // biome-ignore lint/a11y/useSemanticElements: <explanation>
-                    role="button"
                     tabIndex={0}
+                    role="button"
                     className="flex flex-col items-center justify-center gap-4 cursor-pointer text-center"
                     onClick={() => uploadInputRef.current?.click()}
                   >

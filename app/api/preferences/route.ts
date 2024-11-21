@@ -1,7 +1,7 @@
 import { currentUser } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { preferencesSchema } from '@/schemas/preferences'
-import { getPreferences, savePreferences } from '@/db/preferences'
+import { getPreferencesByClerkId, savePreferencesByClerkId } from '@/db/preferences'
 
 export async function POST(request: Request) {
   try {
@@ -22,9 +22,9 @@ export async function POST(request: Request) {
       )
     }
 
-    await savePreferences(user.id, validatedPreferences.data)
+    await savePreferencesByClerkId(user.id, validatedPreferences.data)
 
-    const preferences = await getPreferences(user.id)
+    const preferences = await getPreferencesByClerkId(user.id)
 
     return NextResponse.json({ preferences: preferences }, { status: 200 })
   } catch (error) {
