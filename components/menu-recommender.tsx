@@ -14,9 +14,8 @@ import { Alert } from '@/components/ui/alert'
 import { SignOutButton } from '@clerk/nextjs'
 import type { Menu } from '@/schemas/menu'
 import { UploadZone } from './upload-zone'
-import { Card, CardContent, CardFooter } from './ui/card'
+import { Card, CardContent } from './ui/card'
 
-// Update the DishImage component
 const DishImage = ({ src, alt }: { src: string | null; alt: string }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -118,7 +117,6 @@ const DishImage = ({ src, alt }: { src: string | null; alt: string }) => {
   )
 }
 
-// Update the MenuItemCard component
 const MenuItemCard = ({ item }: { item: Menu['menuItems'][0] }) => (
   <Card className="flex h-full flex-col overflow-hidden">
     <div className="relative aspect-video">
@@ -190,6 +188,14 @@ export default function MenuAnalyzer({
       }
 
       const result = await response.json()
+
+      if (!result.isMenu) {
+        setError(
+          "This image doesn't appear to be a menu. Try taking a clearer photo or getting closer to the menu."
+        )
+        return
+      }
+
       setMenuData(result)
 
       if (isMobile) {
