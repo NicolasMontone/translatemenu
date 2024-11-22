@@ -4,6 +4,22 @@ import { default as NextLink } from 'next/link'
 import { Button } from '../components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card'
 import { Suspense } from 'react'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Translate Menu',
+  description:
+    'Translate Menu lets diners view translated menus with AI-generated dish images, making it easy to explore new cuisines and order with confidence.',
+  icons: {
+    icon: '/icon.svg',
+  },
+  openGraph: {
+    title: 'Translate Menu',
+    description:
+      'Translate Menu lets diners view translated menus with AI-generated dish images, making it easy to explore new cuisines and order with confidence.',
+    images: ['/og.jpg'],
+  },
+}
 
 export default async function Home() {
   return (
