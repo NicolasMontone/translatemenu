@@ -19,31 +19,31 @@ import { ChevronLeft } from 'lucide-react'
 import { SignOutButton } from '@clerk/nextjs'
 
 const countries = [
-  'United States',
-  'Canada',
-  'United Kingdom',
-  'Australia',
   'Argentina',
-  'Germany',
-  'France',
-  'Japan',
-  'India',
+  'Australia',
   'Brazil',
+  'Canada',
+  'France',
+  'Germany',
+  'India',
+  'Japan',
   'Mexico',
   'Other',
+  'United Kingdom',
+  'United States',
 ]
 const languages = [
+  'Arabic',
+  'Chinese',
   'English',
-  'Spanish',
   'French',
   'German',
+  'Hindi',
   'Italian',
   'Japanese',
-  'Chinese',
-  'Hindi',
-  'Arabic',
-  'Portuguese',
   'Other',
+  'Portuguese',
+  'Spanish',
 ]
 
 const preferences = {
