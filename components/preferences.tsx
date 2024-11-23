@@ -220,7 +220,7 @@ export default function Preferences({
           ) : (
             <div />
           )}
-          <SignOutButton>
+          <SignOutButton redirectUrl="/">
             <Button variant="outline" type="button">
               Logout
             </Button>

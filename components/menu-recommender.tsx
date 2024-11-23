@@ -217,7 +217,7 @@ export default function MenuAnalyzer({
             <span>Preferences</span>
             <ChevronRight className="ml-2 h-5 w-5" />
           </Button>
-          <SignOutButton>
+          <SignOutButton redirectUrl="/">
             <Button variant="outline">Logout</Button>
           </SignOutButton>
         </div>
