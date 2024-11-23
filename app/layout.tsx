@@ -1,14 +1,15 @@
 import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
-import { Geist } from 'next/font/google'
+import { Funnel_Sans } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
 import { ThemeSwitcher } from '@/components/theme-switcher'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 
-const geist = Geist({
+const funnelSans = Funnel_Sans({
   subsets: ['latin'],
-  variable: '--font-sans',
+  variable: '--font-funnel-sans',
+  weight: ['400', '700'],
 })
 
 export default function RootLayout({
@@ -18,8 +19,8 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-      <html lang="en" className={geist.variable} suppressHydrationWarning>
-        <body className="bg-background text-foreground font-sans">
+      <html lang="en" className={funnelSans.className} suppressHydrationWarning>
+        <body className="bg-background text-foreground font-funnel-sans">
           <ThemeProvider attribute="class" defaultTheme="dark">
             {children}
             <ThemeSwitcher />
