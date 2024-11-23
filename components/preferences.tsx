@@ -210,7 +210,7 @@ export default function Preferences({
       onSubmit={handleSubmit}
       className="space-y-8 max-w-2xl mx-auto px-4 pb-8"
     >
-      <header className="border-b py-4">
+      <header className="border-b py-4 bg-card">
         <div className="flex justify-between items-center">
           {initialPreferences ? (
             <Button variant="ghost" onClick={onSuccess}>
