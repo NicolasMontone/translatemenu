@@ -29,3 +29,15 @@ export async function createUser(userId: string, email: string) {
 
   return data
 }
+
+export async function updateUserIsProByEmail(email: string, isPro: boolean) {
+  const { error } = await supabase
+    .from('users')
+    .update({ is_pro: isPro })
+    .eq('email', email)
+
+  if (error) {
+    console.error('Error updating user is_pro:', error)
+    throw error
+  }
+}
