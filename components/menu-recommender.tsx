@@ -145,11 +145,14 @@ const MenuItemCard = ({ item }: { item: Menu['menuItems'][0] }) => (
 
 export default function MenuAnalyzer({
   onChangePreferences,
+  newCustomer,
   user,
 }: {
   onChangePreferences?: () => void
+  newCustomer: boolean
   user: User
 }) {
+  const isUserPro = user.is_pro || newCustomer
   const [capturedImages, setCapturedImages] = useState<string[]>([])
   const [menuData, setMenuData] = useState<Menu | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -223,7 +226,7 @@ export default function MenuAnalyzer({
               <span>Preferences</span>
               <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
-            {user.is_pro ? null : <StripeButton />}
+            {isUserPro ? null : <StripeButton />}
           </div>
           <SignOutButton redirectUrl="/">
             <Button variant="outline">Logout</Button>
@@ -276,7 +279,7 @@ export default function MenuAnalyzer({
                 onAddImages={handleAddImages}
                 onRemoveImage={handleRemoveImage}
               />
-              {user.is_pro ? (
+              {isUserPro ? (
                 capturedImages.length > 0 && (
                   <Button
                     className="w-full"

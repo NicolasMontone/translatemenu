@@ -32,6 +32,7 @@ export default function App({
       )}
       {preferences && !changingPreferences ? (
         <MenuRecommender
+          newCustomer={newCustomer}
           user={user}
           onChangePreferences={() => setChangingPreferences(true)}
         />
