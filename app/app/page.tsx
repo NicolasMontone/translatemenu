@@ -6,7 +6,6 @@ import { redirect } from 'next/navigation'
 export default async function AppPage({
   searchParams,
 }: {
-  params: { slug: string }
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const user = await currentUser()
