@@ -70,12 +70,17 @@ export default function Home() {
                 ratio={9 / 16}
                 className="bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden"
               >
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Play className="h-16 w-16 text-gray-400" />
-                  <span className="sr-only">
-                    Watch Translate Menu in Action
-                  </span>
-                </div>
+                <iframe
+                  width="731"
+                  height="1299"
+                  src="https://www.youtube.com/embed/Oi-xJtpVUBM"
+                  title="Translate Menu"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full"
+                />
               </AspectRatio>
               <div className="text-center mt-4">
                 <p className="text-sm text-gray-500">
@@ -125,6 +130,11 @@ export default function Home() {
           <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">
             How It Works
           </h2>
+          {/* add subtitle */}
+          <p className="text-center text-gray-500 mb-12 text-xl">
+            Step out of your comfort zone and explore flavors that will surprise
+            and delight you.
+          </p>
           <BeforeAfter />
         </div>
       </main>
