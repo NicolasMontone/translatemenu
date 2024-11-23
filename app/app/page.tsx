@@ -1,6 +1,6 @@
 import { currentUser } from '@clerk/nextjs/server'
 import App from './app'
-import { getUserByClerkId } from '../../db/user'
+import { getUserByClerkId } from '@/db/user'
 import { redirect } from 'next/navigation'
 
 export default async function AppPage({

@@ -217,7 +217,7 @@ export default function MenuAnalyzer({
     <div className="flex h-screen w-full flex-col">
       <header className="border-b p-4 bg-card">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center flex-wrap gap-4">
             <Button variant="ghost" onClick={onChangePreferences}>
               <Settings className="mr-2 h-5 w-5" />
               <span>Preferences</span>
