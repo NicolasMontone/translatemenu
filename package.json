@@ -36,6 +36,7 @@
 		"react-confetti": "^6.1.0",
 		"react-dom": "19.0.0-rc-66855b96-20241106",
 		"react-dropzone": "^14.3.5",
+		"react-element-to-jsx-string": "^15.0.0",
 		"replicate": "^1.0.1",
 		"server-only": "^0.0.1",
 		"sharp": "^0.33.5",

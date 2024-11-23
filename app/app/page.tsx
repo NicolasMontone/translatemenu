@@ -1,12 +1,29 @@
+import { currentUser } from '@clerk/nextjs/server'
 import App from './app'
+import { getUserByClerkId } from '../../db/user'
+import { redirect } from 'next/navigation'
 
-export default function AppPage({
-  params,
+export default async function AppPage({
   searchParams,
 }: {
   params: { slug: string }
-  searchParams?: { [key: string]: string | string[] | undefined }
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  // newCustomer=true
-  return <App newCustomer={searchParams?.newCustomer === 'true'} />
+  const user = await currentUser()
+
+  if (!user) {
+    return redirect('/')
+  }
+
+  const supabaseUser = await getUserByClerkId(user?.id)
+
+  if (!supabaseUser) {
+    return redirect('/')
+  }
+
+  const search = await searchParams
+
+  return (
+    <App newCustomer={search?.newCustomer === 'true'} user={supabaseUser} />
+  )
 }

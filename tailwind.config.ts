@@ -2,7 +2,6 @@ import type { Config } from 'tailwindcss'
 
 const svgToDataUri = require('mini-svg-data-uri')
 
-const colors = require('tailwindcss/colors')
 const {
   default: flattenColorPalette,
 } = require('tailwindcss/lib/util/flattenColorPalette')
@@ -47,6 +46,7 @@ export default {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
         },
+
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',

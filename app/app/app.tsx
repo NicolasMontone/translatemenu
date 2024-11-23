@@ -5,9 +5,16 @@ import Preferences from '@/components/preferences'
 import { useAppContext } from '@/state'
 import { useState } from 'react'
 import { useWindowSize } from 'usehooks-ts'
+import type { User } from '@/db/database.types'
 import Confetti from 'react-confetti'
 
-export default function App({ newCustomer }: { newCustomer: boolean }) {
+export default function App({
+  newCustomer,
+  user,
+}: {
+  newCustomer: boolean
+  user: User
+}) {
   const [changingPreferences, setChangingPreferences] = useState(false)
   const { preferences } = useAppContext()
 
@@ -25,6 +32,7 @@ export default function App({ newCustomer }: { newCustomer: boolean }) {
       )}
       {preferences && !changingPreferences ? (
         <MenuRecommender
+          user={user}
           onChangePreferences={() => setChangingPreferences(true)}
         />
       ) : (

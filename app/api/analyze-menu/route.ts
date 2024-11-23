@@ -66,6 +66,10 @@ export async function POST(request: Request) {
       return new Response('Unauthorized', { status: 401 })
     }
 
+    if (!supabaseUser.is_pro) {
+      return new Response('User is not pro', { status: 403 })
+    }
+
     const preferences = await getPreferencesByClerkId(user.id)
 
     const formData = await request.formData()

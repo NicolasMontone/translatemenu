@@ -15,6 +15,9 @@ import { SignOutButton } from '@clerk/nextjs'
 import type { Menu } from '@/schemas/menu'
 import { UploadZone } from './upload-zone'
 import { Card, CardContent } from './ui/card'
+import type { User } from '@/db/database.types'
+import StripeLink from './stripe-link'
+import StripeButton from './stripe-button'
 
 const DishImage = ({ src, alt }: { src: string | null; alt: string }) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -142,8 +145,10 @@ const MenuItemCard = ({ item }: { item: Menu['menuItems'][0] }) => (
 
 export default function MenuAnalyzer({
   onChangePreferences,
+  user,
 }: {
   onChangePreferences?: () => void
+  user: User
 }) {
   const [capturedImages, setCapturedImages] = useState<string[]>([])
   const [menuData, setMenuData] = useState<Menu | null>(null)
@@ -212,11 +217,14 @@ export default function MenuAnalyzer({
     <div className="flex h-screen w-full flex-col">
       <header className="border-b p-4 bg-card">
         <div className="flex items-center justify-between">
-          <Button variant="ghost" onClick={onChangePreferences}>
-            <Settings className="mr-2 h-5 w-5" />
-            <span>Preferences</span>
-            <ChevronRight className="ml-2 h-5 w-5" />
-          </Button>
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" onClick={onChangePreferences}>
+              <Settings className="mr-2 h-5 w-5" />
+              <span>Preferences</span>
+              <ChevronRight className="ml-2 h-5 w-5" />
+            </Button>
+            {user.is_pro ? null : <StripeButton />}
+          </div>
           <SignOutButton redirectUrl="/">
             <Button variant="outline">Logout</Button>
           </SignOutButton>
@@ -268,23 +276,31 @@ export default function MenuAnalyzer({
                 onAddImages={handleAddImages}
                 onRemoveImage={handleRemoveImage}
               />
-              {capturedImages.length > 0 && (
-                <Button
-                  className="w-full"
-                  size="lg"
-                  onClick={handleAnalyze}
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Analyzing Menu...
-                    </>
-                  ) : (
-                    'Analyze Menu'
-                  )}
-                </Button>
-              )}
+              {user.is_pro ? (
+                capturedImages.length > 0 && (
+                  <Button
+                    className="w-full"
+                    size="lg"
+                    onClick={handleAnalyze}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Analyzing Menu...
+                      </>
+                    ) : (
+                      'Analyze Menu'
+                    )}
+                  </Button>
+                )
+              ) : capturedImages.length > 0 ? (
+                <StripeLink>
+                  <Button className="w-full" size="lg">
+                    Analyze Menu
+                  </Button>
+                </StripeLink>
+              ) : null}
             </div>
           )}
         </div>
