@@ -18,8 +18,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Header */}
-      <header className="max-w-[1340px] w-full mx-auto px-4">
+      <header className="max-w-[1340px] w-full mx-auto p-4">
         <div className="h-14 flex items-center justify-between">
           <Link className="flex items-center" href="/">
             <Image
