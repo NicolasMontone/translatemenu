@@ -18,10 +18,7 @@ const stripe = new Stripe(
   }
 )
 
-const relevantEvents = new Set([
-  'customer.subscription.created',
-  'checkout.session.completed'
-])
+const relevantEvents = new Set(['customer.subscription.created'])
 
 export async function POST(req: Request) {
   const body = await req.text()
@@ -60,21 +57,6 @@ export async function POST(req: Request) {
 
           await updateUserIsProByEmail(email, true)
 
-          break
-        }
-        case 'checkout.session.completed': {
-          const session = event.data.object as Stripe.Checkout.Session
-          
-          if (session.payment_link === 'plink_1QOJtQD3sxiLFHCHc0gh1DqG') {
-            const customerEmail = session.customer_details?.email
-            
-            if (!customerEmail) {
-              return new Response('No email found for customer', { status: 200 })
-            }
-
-            await updateUserIsProByEmail(customerEmail, true)
-          }
-          
           break
         }
         default:
