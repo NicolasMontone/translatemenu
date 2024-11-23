@@ -40,6 +40,7 @@ export default function App({
         <Preferences
           onSuccess={() => setChangingPreferences(false)}
           initialPreferences={preferences}
+          user={user}
         />
       )}
     </div>

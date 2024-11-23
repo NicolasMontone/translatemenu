@@ -17,6 +17,7 @@ import type { Preferences as PreferencesData } from '@/schemas/preferences'
 import { useAppContext } from '@/state'
 import { ChevronLeft } from 'lucide-react'
 import { SignOutButton } from '@clerk/nextjs'
+import type { User } from '@/db/database.types'
 
 const countries = [
   'Argentina',
@@ -83,11 +84,13 @@ const savePreferences = async (
 type PreferencesProps = {
   initialPreferences: PreferencesData | null
   onSuccess?: () => void
+  user: User
 }
 
 export default function Preferences({
   initialPreferences,
   onSuccess,
+  user,
 }: PreferencesProps) {
   const { setPreferences } = useAppContext()
   const [country, setCountry] = useState(initialPreferences?.country ?? '')
@@ -342,6 +345,23 @@ export default function Preferences({
       <Button type="submit" className="w-full" disabled={isLoading}>
         {isLoading ? 'Saving...' : 'Save Preferences'}
       </Button>
+
+      {user.is_pro && (
+        <div className="pt-8 border-t">
+          <h3 className="text-lg font-semibold mb-2">
+            Subscription Management
+          </h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            You are currently on a Pro subscription.
+          </p>
+          <a
+            href="https://billing.stripe.com/p/login/9AQeWRfh2cm86Y0144"
+            className="text-sm text-primary hover:underline"
+          >
+            Manage or cancel subscription
+          </a>
+        </div>
+      )}
     </form>
   )
 }
