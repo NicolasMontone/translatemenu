@@ -38,14 +38,14 @@ const DishImage = ({ src, alt }: { src: string | null; alt: string }) => {
         if (!mounted) return
 
         if (response.status === 404) {
-          if (attemptCount >= 30) {
-            // 2 minutes maximum (30 * 4 seconds)
+          if (attemptCount >= 120) {
+            // 2 minutes maximum (120 * 1 second)
             setError(true)
             setIsLoading(false)
             return
           }
-          // First poll after 4 seconds, then continue polling every 4 seconds
-          timeoutId = setTimeout(() => pollImage(attemptCount + 1), 4000)
+          // Poll every second instead of 1 seconds
+          timeoutId = setTimeout(() => pollImage(attemptCount + 1), 1000)
           return
         }
 
@@ -62,19 +62,19 @@ const DishImage = ({ src, alt }: { src: string | null; alt: string }) => {
       } catch (err) {
         if (!mounted) return
 
-        if (attemptCount >= 30) {
+        if (attemptCount >= 120) {
           setError(true)
           setIsLoading(false)
           return
         }
-        // First poll after 4 seconds, then continue polling every 4 seconds
-        timeoutId = setTimeout(() => pollImage(attemptCount + 1), 4000)
+        // Poll every second instead of 4 seconds
+        timeoutId = setTimeout(() => pollImage(attemptCount + 1), 1000)
       }
     }
 
     if (src) {
-      // Start first poll after 4 seconds
-      timeoutId = setTimeout(() => pollImage(0), 4000)
+      // Start first poll after 1 second instead of 4
+      timeoutId = setTimeout(() => pollImage(0), 1000)
     } else {
       setIsLoading(false)
     }
